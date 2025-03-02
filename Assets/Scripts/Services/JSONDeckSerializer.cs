@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Services.Providers.Deck;
 using UnityEngine;
+using Zenject;
 
 namespace Services.Serialization.Deck
 {
@@ -11,70 +14,32 @@ namespace Services.Serialization.Deck
     {
         //TODO: use a more robust serialization library like Newtonsoft.Json
         //TODO: as well as a proper loading/saving path prompt for the user
-        
+
         private const string FileName = "deck.json";
         private string FilePath => $"{Application.persistentDataPath}/{FileName}";
 
         private IDeckItemValidationService m_validator;
-        public JSONDeckSerializer(IDeckItemValidationService validator)
+        private JSONContractResolver m_resolver;
+        public JSONDeckSerializer(IDeckItemValidationService validator, JSONContractResolver resolver)
         {
             m_validator = validator;
+            m_resolver = resolver;
         }
-        
-        //AND I remembered why no one uses Unity's JsonUtility...
-        //It's because it's awful
-        //Like it can't serialize/deserialize properties, only fields
-        
-        [Serializable]
-        private class SerializableDeck
-        {
-            public string Name;
-            public SerializableDeckItem[] Cards;
-        }
-        
-        [Serializable]
-        private class SerializableDeckItem
-        {
-            public string Name;
-            public int Count;
-        }
-        
+
+        //And newtonsoft works just perfect as always
         public void Serialize(Deck deck)
         {
-            var serializableDeck = new SerializableDeck
-            {
-                Name = deck.Name,
-                Cards = new SerializableDeckItem[deck.Cards.Length]
-            };
-            
-            for (int i = 0; i < deck.Cards.Length; i++)
-            {
-                var card = deck.Cards[i];
-                serializableDeck.Cards[i] = new SerializableDeckItem
-                {
-                    Name = card.Id,
-                    Count = card.Count
-                };
-            }
-            
-            File.WriteAllText(FilePath, JsonUtility.ToJson(serializableDeck));
+            File.WriteAllText(FilePath, JsonConvert.SerializeObject(deck, Formatting.Indented));
         }
 
         public Deck Deserialize()
         {
             try
             {
-                var json = File.ReadAllText(FilePath);
-                var serializableDeck = JsonUtility.FromJson<SerializableDeck>(json);
-                var cards = new DeckItem[serializableDeck.Cards.Length];
-                
-                for (int i = 0; i < serializableDeck.Cards.Length; i++)
+                return JsonConvert.DeserializeObject<Deck>(File.ReadAllText(FilePath), new JsonSerializerSettings
                 {
-                    var card = serializableDeck.Cards[i];
-                    cards[i] = new DeckItem(card.Name, card.Count, m_validator);
-                }
-                
-                return new Deck(serializableDeck.Name, cards);
+                    ContractResolver = m_resolver
+                });
             }
             catch (Exception e)
             {
@@ -83,7 +48,27 @@ namespace Services.Serialization.Deck
             }
         }
     }
+
+    public class JSONContractResolver : DefaultContractResolver
+    {
+        private readonly DiContainer m_container;
+
+        public JSONContractResolver(DiContainer container)
+        {
+            m_container = container;
+        }
+
+        protected override JsonObjectContract CreateObjectContract(Type objectType)
+        {
+            if (m_container.HasBinding(objectType))
+            {
+                JsonObjectContract contract = base.CreateObjectContract(objectType);
+                contract.DefaultCreator = () => m_container.Instantiate(objectType);
+
+                return contract;
+            }
+
+            throw new ArgumentException("No binding found for type " + objectType);
+        }
+    }
 }
-
-
-

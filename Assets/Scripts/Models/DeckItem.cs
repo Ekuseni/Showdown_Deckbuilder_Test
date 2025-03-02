@@ -12,6 +12,11 @@ namespace Models
         //I decided to add validation service to the model as well
         
         private readonly IDeckItemValidationService m_validationService;
+        public DeckItem(IDeckItemValidationService validationService)
+        { 
+            m_validationService = validationService;
+        }
+        
         public DeckItem(string id, int count, IDeckItemValidationService validationService)
         {
             Id = id;

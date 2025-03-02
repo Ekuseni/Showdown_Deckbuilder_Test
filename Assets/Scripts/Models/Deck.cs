@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Services.Providers.Deck;
 using Services.Serialization.Deck;
@@ -17,18 +16,18 @@ namespace Models
         //Wasn't sure if this should be in a model but in task description it was mentioned that I should add a dummy deck provider,
         //and it was not stated that I can't extend the model with additional functionality,
         //and canonical way is to link model with external services such as data providers I decided to add this constructor
-        public Deck(IDeckProviderService provider,IDeckSerializationService serializationService)
+        public Deck(IDeckProviderService provider, IDeckSerializationService serializationService)
         {
             m_deckProvider = provider;
             m_serializationService = serializationService;
             (Name, Cards) = m_deckProvider.GetDeck();
         }
         
-        public Deck(string name, DeckItem[] cards)
-        {
-            Name = name;
-            Cards = cards;
-        }
+        // public Deck(string name, DeckItem[] cards)
+        // {
+        //     Name = name;
+        //     Cards = cards;
+        // }
         
         public override string ToString()
         {
