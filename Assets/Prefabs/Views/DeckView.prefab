@@ -1661,6 +1661,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5329533598235091744}
   - component: {fileID: 8626550968211741317}
+  - component: {fileID: 7876722279716333975}
+  - component: {fileID: 574670894708656383}
   m_Layer: 5
   m_Name: DeckView
   m_TagString: Untagged
@@ -1708,3 +1710,38 @@ MonoBehaviour:
   m_deckNameInputField: {fileID: 1348715632404108244}
   m_deckItemPrefab: {fileID: 1184162867166499314, guid: 40a8a21514fa72e4ba0ae6ada9be4125, type: 3}
   m_deckItemsParent: {fileID: 4482788429749579674}
+--- !u!114 &7876722279716333975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9118602441839487015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: 574670894708656383}
+  _installerPrefabs: []
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &574670894708656383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9118602441839487015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28afef6d4de7e1d44bb5e2c90183c264, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_deckView: {fileID: 8626550968211741317}
+  m_deckProviderSeed: 1234
+  m_deckSize: 6
+  m_minCardCount: 0
+  m_maxCardCount: 3
